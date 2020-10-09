@@ -1,2 +1,6 @@
-# UPC_VAR_CaveSimulator
- Cave Simulator for VAR course at UPC
+# Cave Simulator
+Academic project.
+- **Tools**: OpenGL, ThreeJS, WebGL
+- **Course**: Virtual and Augmented Reality (VAR)
+- **Master**: Master in Innovation and Research in Informatics (MIRI) - Specialization in Computer Graphics and Virtual Reality
+- **University**: Universitat Politècnica de Catalunya (UPC)
