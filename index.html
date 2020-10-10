@@ -31,25 +31,66 @@ class DisplaySurface
 
 	viewMatrix(eye)
 	{
-		// to be written by you!
-
-		var target = new THREE.Vector3(0,0,0);	
-		var upVector = new THREE.Vector3(0,1,0);	
+        // console.log(this.name);
+        // console.log("Eye: ", eye);
+        // console.log("u,v: ", this.u, this.v);
+        var target = this.v.clone().cross(this.u).add(eye);
+        var upVector = new THREE.Vector3(0,1,0);
+        if (this.name == "Floor")
+            upVector = new THREE.Vector3(0,0,-1)
+        
 		var mat = new THREE.Matrix4();
 		mat = mat.lookAt(eye, target, upVector); // this lookAt version creates only a rotation matrix
 		var translate = new THREE.Matrix4().makeTranslation(-eye.x, -eye.y, -eye.z);
 		mat = mat.multiplyMatrices(mat, translate);
+        console.log(this.name + " wall View Matrix", mat);
 		return mat;
 	}
 	
     projectionMatrix(eye, znear, zfar)
     {
-		// to be written by you!
+        // // normalize uv
+        // var u_normalized = this.u.clone().normalize();
+        // var v_normalized = this.v.clone().normalize();
+
+        // // // Vector from the eye to the origin
+        // var eyeToOriginL = this.origin.clone();
+        // var eyeToOriginR = this.origin.clone().add(this.u);
+        // var eyeToOriginTop = this.origin.clone().add(this.v);
+
+        // //console.log(eyeToOriginR);
+        // eyeToOriginL.sub(eye);
+        // eyeToOriginR.sub(eye);
+        // eyeToOriginTop.sub(eye)
+
+        // // Vector from the eye to the display surface
+        // var eyeToSurface = this.u.clone().cross(this.v).normalize();
+
+		// // // compute distances using dot products
+        // var leftP = eyeToOriginL.dot(u_normalized);
+        // var rightP = eyeToOriginR.dot(u_normalized);
+        // var bottomP = eyeToOriginL.dot(v_normalized);
+        // var topP = eyeToOriginTop.dot(v_normalized);
+        // var nearP = eyeToOriginL.dot(eyeToSurface);
+        
+        // console.log(this.name, ", Eye: ", eye);
+        // console.log("LEFT PRIME: ", leftP);
+        // console.log("RIGHT PRIME: ", rightP);
+        // console.log("TOP PRIME: ", topP);
+        // console.log("BOTTOM PRIME: ", bottomP);
+
+        // var left = leftP * znear / nearP;
+        // var right = rightP * znear / nearP;
+        // console.log("LEFT: ", left);
+        // console.log("RIGHT: ", right);
+        // var bottom = bottomP * znear / nearP;
+        // var top = topP * znear / nearP;
 
         var left = -1;
         var right = 1;
-        var bottom = -1;
         var top = 1;
+        var bottom = -1;
+
         return new THREE.Matrix4().makePerspective(left, right, top, bottom, znear, zfar);
     }
 }
@@ -236,8 +277,19 @@ function createDisplaySurfaces()
         new THREE.Vector3(0.0, 300.0,   0.0));
     displaySurfaces.push(leftScreen);
 	
-	// to be completed by you
-	
+    // RIGHT SCREEN
+	var rightScreen = new DisplaySurface("Right",
+        new THREE.Vector3(150.0, -150.0, -150.0), 
+        new THREE.Vector3(0.0, 0.0,  300.0), 
+        new THREE.Vector3(0.0, 300.0,   0.0));
+    displaySurfaces.push(rightScreen);
+
+    // FLOOR SCREEN
+    var floorScreen = new DisplaySurface("Floor",
+        new THREE.Vector3(-150.0, -150.0, 150.0), 
+        new THREE.Vector3(300.0, 0.0, 0.0), 
+        new THREE.Vector3(0.0, 0.0, -300.0));
+    displaySurfaces.push(floorScreen);
 }
 
 function getLeftEyePosition()
