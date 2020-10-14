@@ -17,6 +17,8 @@ import * as THREE from 'https://threejs.org/build/three.module.js';
 import { OrbitControls } from 'https://threejs.org/examples/jsm/controls/OrbitControls.js';
 import { DragControls } from 'https://threejs.org/examples/jsm/controls/DragControls.js';
 import { TeapotBufferGeometry } from 'https://threejs.org/examples/jsm/geometries/TeapotBufferGeometry.js';
+import { LightningStrike } from 'https://threejs.org/examples/jsm/geometries/LightningStrike.js';
+import { GLTFLoader } from 'https://threejs.org/examples/jsm/loaders/GLTFLoader.js';
 
 
 class DisplaySurface 
@@ -114,6 +116,8 @@ function addDragControlToObjects()
     var objects = [];
     objects.push(scene.getObjectByName("Teapot"));
     objects.push(eyeScene.getObjectByName("Head"));
+    // objects.push(scene.getObjectByName("Plants"));
+    // objects.push(eyeScene.getObjectByName("Arthas"));
     
 	console.log(objects); 
 	
@@ -206,6 +210,59 @@ function createScene()
     teapot.name = "Teapot";
     teapot.position.z-=70;
     scene.add( teapot );
+
+    scene.userData.rayParams = {
+        radius0: 2,
+        radius1: 2,
+        minRadius: 2.5,
+        maxIterations: 10,
+        isEternal: true,
+
+        timeScale: 0.7,
+
+        propagationTimeFactor: 0.05,
+        vanishingTimeFactor: 0.95,
+        subrayPeriod: 3.5,
+        subrayDutyCycle: 0.6,
+        maxSubrayRecursion: 4,
+        ramification: 7,
+        recursionProbability: 0.6,
+
+        roughness: 0.85,
+        straightness: 0.6
+    };
+
+    var geometry1 = new LightningStrike(scene.userData.rayParams);
+    var material1 = new THREE.MeshPhongMaterial( { color: 0xffffff } );
+    var lightningStrike = new THREE.Mesh(geometry1, material1);
+    lightningStrike.name = "LightningStrike";
+    lightningStrike.position.set(-70,30,-70);
+    // lightningStrike.position.x-=70;
+    // lightningStrike.position.y-=70;
+    scene.add( lightningStrike );
+
+
+    var loader = new GLTFLoader();
+    loader.load( 'models/Plants/scene.gltf', function ( gltf ) {
+        console.log(gltf.scene);
+        gltf.scene.scale.set(500,500,500);
+        gltf.scene.position.set(0,-150,50);
+        gltf.scene.name = "Plants";
+        scene.add( gltf.scene );
+    }, undefined, function ( error ) {
+        console.error( error );
+    } );
+
+    loader.load( 'models/Arthas/scene.gltf', function ( gltf ) {
+        console.log(gltf.scene);
+        gltf.scene.scale.set(70,70,70);
+        gltf.scene.position.set(0,-150,-100);
+        scene.add( gltf.scene );
+        gltf.scene.name = "Arthas";
+
+    }, undefined, function ( error ) {
+        console.error( error );
+    } );
                 
     createLights(scene);
 }
