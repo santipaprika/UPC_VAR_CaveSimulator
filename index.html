@@ -33,11 +33,6 @@ class DisplaySurface
 
 	viewMatrix(eye)
 	{
-        var debug = false;
-
-        if (debug)
-            eye = new THREE.Vector3(50, 20, 100);
-
         var target = this.v.clone().cross(this.u).add(eye);
         var upVector = new THREE.Vector3(0,1,0);
         if (this.name == "Floor")
@@ -48,22 +43,11 @@ class DisplaySurface
 		var translate = new THREE.Matrix4().makeTranslation(-eye.x, -eye.y, -eye.z);
 		mat = mat.multiplyMatrices(mat, translate);
 
-        if (debug)
-            console.log(this.name + " wall View Matrix", mat);
-
 		return mat;
 	}
 	
     projectionMatrix(eye, znear, zfar)
     {
-        var debug = false;
-
-        if (debug) {
-            eye = new THREE.Vector3(50,20,100);
-            znear = 0.1;
-            zfar = 100;
-        }
-
         // normalize uv
         var u_normalized = this.u.clone().normalize();
         var v_normalized = this.v.clone().normalize();
@@ -94,11 +78,6 @@ class DisplaySurface
         var top = - topP * znear / nearP;
 
         var projMat = new THREE.Matrix4().makePerspective(left, right, top, bottom, znear, zfar)
-        
-        if (debug) {
-            console.log(this.name + "Values:", left, right, top, bottom, znear, zfar)
-            console.log(this.name + " wall Projection Matrix", projMat)
-        }
 
         return projMat;
     }
@@ -116,8 +95,8 @@ function addDragControlToObjects()
     var objects = [];
     objects.push(scene.getObjectByName("Teapot"));
     objects.push(eyeScene.getObjectByName("Head"));
-    // objects.push(scene.getObjectByName("Plants"));
-    // objects.push(eyeScene.getObjectByName("Arthas"));
+    //objects.push(eyeScene.getObjectByName("LightningStrike"));
+    
     
 	console.log(objects); 
 	
@@ -211,35 +190,30 @@ function createScene()
     teapot.position.z-=70;
     scene.add( teapot );
 
+    var material1 = new THREE.MeshPhongMaterial( { color: 0xff00ff } );
+    material1.side = THREE.DoubleSide;
+
     scene.userData.rayParams = {
-        radius0: 2,
-        radius1: 2,
+        radius0: 1,
+        radius1: 1,
+        radius0Factor: 0.82,
         minRadius: 2.5,
-        maxIterations: 10,
-        isEternal: true,
+        maxIterations: 6,
 
-        timeScale: 0.7,
-
-        propagationTimeFactor: 0.05,
-        vanishingTimeFactor: 0.95,
-        subrayPeriod: 3.5,
-        subrayDutyCycle: 0.6,
-        maxSubrayRecursion: 4,
-        ramification: 7,
-        recursionProbability: 0.6,
+        subrayPeriod: 0.8,
+        ramification: 10,
+        recursionProbability: 0.8,
 
         roughness: 0.85,
-        straightness: 0.6
+        straightness: 0.7
     };
 
-    var geometry1 = new LightningStrike(scene.userData.rayParams);
-    var material1 = new THREE.MeshPhongMaterial( { color: 0xffffff } );
-    var lightningStrike = new THREE.Mesh(geometry1, material1);
-    lightningStrike.name = "LightningStrike";
-    lightningStrike.position.set(-70,30,-70);
-    // lightningStrike.position.x-=70;
-    // lightningStrike.position.y-=70;
-    scene.add( lightningStrike );
+    var lightningStrike = new LightningStrike(scene.userData.rayParams);
+    var lightningMaterial = new THREE.MeshBasicMaterial( { color: new THREE.Color( 0xB0FFFF ) } );
+    var lightningStrikeMesh = new THREE.Mesh( lightningStrike, lightningMaterial );
+    lightningStrikeMesh.name = "LightningStrike";
+    lightningStrikeMesh.position.set(-70,30,-70);
+    scene.add( lightningStrikeMesh );
 
 
     var loader = new GLTFLoader();
@@ -455,6 +429,16 @@ window.addEventListener( 'keydown', function ( event )
 				console.log(viewL);
 				console.log(viewR);
 				console.log(viewB);
+
+                var projectionF = displaySurfaces[0].projectionMatrix(new THREE.Vector3(50,20,100), 0.1, 100);
+				var projectionL = displaySurfaces[1].projectionMatrix(new THREE.Vector3(50,20,100), 0.1, 100);
+				var projectionR = displaySurfaces[2].projectionMatrix(new THREE.Vector3(50,20,100), 0.1, 100);
+				var projectionB = displaySurfaces[3].projectionMatrix(new THREE.Vector3(50,20,100), 0.1, 100);
+				console.log("Projection matrices:");
+				console.log(projectionF);
+				console.log(projectionL);
+				console.log(projectionR);
+				console.log(projectionB);
 				break;
                 
                     
