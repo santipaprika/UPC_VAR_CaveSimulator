@@ -64,7 +64,7 @@ class DisplaySurface
         eyeToOriginTop.sub(eye)
 
         // Vector from the eye to the display surface
-        var eyeToSurface = this.u.clone().cross(this.v).normalize();
+        var eyeToSurface = this.v.clone().cross(this.u).normalize();
 
 		// compute distances using dot products
         var leftP = eyeToOriginL.dot(u_normalized);
@@ -73,10 +73,10 @@ class DisplaySurface
         var topP = eyeToOriginTop.dot(v_normalized);
         var nearP = eyeToOriginL.dot(eyeToSurface);
 
-        var left = - leftP * znear / nearP;
-        var right = - rightP * znear / nearP;
-        var bottom = - bottomP * znear / nearP;
-        var top = - topP * znear / nearP;
+        var left = leftP * znear / nearP;
+        var right = rightP * znear / nearP;
+        var bottom = bottomP * znear / nearP;
+        var top = topP * znear / nearP;
 
         var projMat = new THREE.Matrix4().makePerspective(left, right, top, bottom, znear, zfar)
 
